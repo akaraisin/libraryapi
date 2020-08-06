@@ -11,7 +11,7 @@ import { CheckedOutRoutingModule } from './checked-out-routing.module';
   imports: [
     CommonModule,
     CheckedOutRoutingModule,
-    LibraryMatModule
+    LibraryMatModule,
   ]
 })
 export class CheckedOutModule { }

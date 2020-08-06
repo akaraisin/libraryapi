@@ -53,10 +53,14 @@ export class BookDetailsComponent implements OnInit {
    */
   isMaximumNumberOfBooksSignedOut(): boolean {
     // TODO: Implement check
-    return false;
+    if (this.numOfThisBookSignedOutByUser > 1 || this.numBooksAvailable == 0) {
+      return false;
+    }
+    return true;
   }
 
   checkOutBook() {
+    if (!this.isMaximumNumberOfBooksSignedOut()) {
     const params = this.route.snapshot.paramMap;
     this.books.checkOutBook(+params.get('lid'), +params.get('id'), this.authService.currentMember.memberId)
       .pipe(
@@ -67,6 +71,7 @@ export class BookDetailsComponent implements OnInit {
         const bookId = +params.get('id');
         this.getBookDetails(libraryId, bookId);
       });
+    }
   }
 
   returnBook() {
