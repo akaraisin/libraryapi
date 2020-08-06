@@ -10,7 +10,6 @@
         <li class="nav-item">
           <button class="nav-link" mat-button routerLink="libraries" routerLinkActive="active">Libraries</button>
         </li>
-        <!--
         <li class="nav-item">
           <button class="nav-link" *ngIf="isLoggedIn$ | async" mat-button
             [routerLink]="['members', getAuthUser().memberId]" routerLinkActive="active">Profile</button>
@@ -21,19 +20,6 @@
         </li>
         <li class="nav-item">
           <button class="nav-link" *ngIf="isLoggedIn$ | async" mat-button [routerLink]="['checked-out/history']"
-            routerLinkActive="active">History</button>
-        </li>
-        -->
-        <li class="nav-item">
-          <button class="nav-link" mat-button
-            [routerLink]="['members', 1]" routerLinkActive="active">Profile</button>
-        </li>
-        <li class="nav-item">
-          <button class="nav-link" mat-button [routerLink]="['checked-out']"
-            routerLinkActive="active">Checked Out</button>
-        </li>
-        <li class="nav-item">
-          <button class="nav-link" mat-button [routerLink]="['checked-out/history']"
             routerLinkActive="active">History</button>
         </li>
         <li class="nav-item">
