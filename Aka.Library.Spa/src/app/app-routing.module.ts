@@ -4,8 +4,7 @@ import { LoginComponent } from './components/login/login.component';
 import { AuthGuard } from './guards/auth.guard';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Routes, Router, Route } from '@angular/router';
-import { AppComponent } from './app.component';
+import { RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
   { path: '', redirectTo: 'libraries', pathMatch: 'full' },
@@ -25,6 +24,12 @@ const routes: Routes = [
   {
     path: 'checked-out',
     loadChildren: './checked-out/checked-out.module#CheckedOutModule',
+    canActivate: [AuthGuard],
+    canActivateChild: [AuthChildrenGuard]
+  },
+  {
+    path: 'books',
+    loadChildren: './books/books.module#BooksModule',
     canActivate: [AuthGuard],
     canActivateChild: [AuthChildrenGuard]
   },

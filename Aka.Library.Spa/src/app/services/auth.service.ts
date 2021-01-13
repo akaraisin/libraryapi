@@ -29,6 +29,7 @@ export class AuthService {
         tap(res => {
           this.isAuthenticated = res !== null;
           this.currentMember = res;
+          this.loggedIn.next(true)
         })
       );
   }
@@ -36,6 +37,7 @@ export class AuthService {
   logout(): void {
     this.isAuthenticated = false;
     this.currentMember = null;
+    this.loggedIn.next(false)
   }
 
 }

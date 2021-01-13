@@ -28,6 +28,8 @@ export class BookDetailsComponent implements OnInit {
   numBooksAvailable: number;
   bookMetadata: GoogleBooksMetadata;
   numOfThisBookSignedOutByUser: number;
+  isAvailable: boolean
+  isCheckedOut: boolean
 
   constructor(
     private route: ActivatedRoute,
@@ -52,11 +54,20 @@ export class BookDetailsComponent implements OnInit {
    * @memberof BookDetailsComponent
    */
   isMaximumNumberOfBooksSignedOut(): boolean {
-    // TODO: Implement check
-    return false;
+    if(this.numOfThisBookSignedOutByUser <= 2) return false;
+    else return true
   }
 
   checkOutBook() {
+
+    if(this.isCheckedOut){
+      alert('You alreay have this book')
+    }
+
+    if(this.numOfThisBookSignedOutByUser > 2){
+      alert('You cannot have more than 2 books')
+    }
+
     const params = this.route.snapshot.paramMap;
     this.books.checkOutBook(+params.get('lid'), +params.get('id'), this.authService.currentMember.memberId)
       .pipe(
@@ -75,7 +86,7 @@ export class BookDetailsComponent implements OnInit {
       .pipe(
         take(1)
       )
-      .subscribe(() => {
+      .subscribe((data) => {
         const libraryId = +params.get('lid');
         const bookId = +params.get('id');
         this.getBookDetails(libraryId, bookId);
@@ -94,9 +105,7 @@ export class BookDetailsComponent implements OnInit {
       this.books.getBook(libraryId, bookId),
       this.books.getNumberOfAvailableBookCopies(libraryId, bookId),
       this.memberService.getSignedOutBooks(this.authService.currentMember)
-    ]).pipe(
-      take(1),
-      tap(([book, numberOfAvailableCopies, signedOutBooks]) => {
+    ]).pipe(take(1)).subscribe(([book, numberOfAvailableCopies, signedOutBooks]) => {
         this.numBooksSignedOut = signedOutBooks.length;
         this.numBooksAvailable = numberOfAvailableCopies;
         this.numOfThisBookSignedOutByUser = filter(signedOutBooks, (signedOutBook) => signedOutBook.bookId === book.bookId).length;
@@ -105,17 +114,17 @@ export class BookDetailsComponent implements OnInit {
           .pipe(take(1))
           .subscribe((bookMetadata: GoogleBooksMetadata) => {
             this.bookMetadata = bookMetadata;
+            const areBooksAvailable = numberOfAvailableCopies > 0;
+            const hasUserCheckedThisBookOut = !!find(signedOutBooks, { bookId: book.bookId });
+            this.book = book
+            this.isAvailable = areBooksAvailable
+            this.isCheckedOut = hasUserCheckedThisBookOut
           });
-      }),
-      map(([book, numberOfAvailableCopies, signedOutBooks]) => {
-        const areBooksAvailable = numberOfAvailableCopies > 0;
-        const hasUserCheckedThisBookOut = !!find(signedOutBooks, { bookId: book.bookId });
-        return { ...book, isAvailable: areBooksAvailable, isCheckedOut: hasUserCheckedThisBookOut };
-      }),
+      })
       catchError(err => {
+        console.log(err)
         return throwError(err);
       })
-    );
   }
 
 }

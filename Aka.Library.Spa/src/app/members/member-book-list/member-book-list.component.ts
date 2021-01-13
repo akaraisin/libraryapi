@@ -4,6 +4,7 @@ import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material';
 import { Component, OnInit, Input, ViewChild, AfterViewInit, HostBinding } from '@angular/core';
 import { slideInDownAnimation } from '../../animations';
 import { Library } from '../../shared/library';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-member-book-list',
@@ -27,11 +28,11 @@ export class MemberBookListComponent implements OnInit, AfterViewInit {
   @Input()
   set memberBooks(value: MemberBook[]){
     this.currentLibrary = null;
-
     this.dataSource.data = value;
+
   }
 
-  constructor() { }
+  constructor(private router: Router) { }
 
   applyFilter(filterValue: string) {
     filterValue = filterValue.trim(); // Remove whitespace

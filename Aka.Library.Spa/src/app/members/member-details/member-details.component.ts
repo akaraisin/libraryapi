@@ -5,9 +5,10 @@ import { Component, OnInit, HostBinding } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Member } from '../interfaces/member';
-import { switchMap, tap } from 'rxjs/operators';
+import { filter, switchMap, tap } from 'rxjs/operators';
 import { AuthService } from '../../services/auth.service';
-import { MemberBook } from '../interfaces/member-book';
+import { SignedOutBook } from '../../shared/signed-out-book';
+import { MatTabChangeEvent } from '@angular/material';
 
 @Component({
   selector: 'app-member-details',
@@ -15,6 +16,7 @@ import { MemberBook } from '../interfaces/member-book';
   styleUrls: ['./member-details.component.scss'],
   animations: [slideInDownAnimation]
 })
+
 export class MemberDetailsComponent implements OnInit {
   loginErrors: boolean;
   @HostBinding('@routeAnimation') routeAnimation = true;
@@ -26,8 +28,8 @@ export class MemberDetailsComponent implements OnInit {
   postalCode: string;
   memberForm: FormGroup;
   member$: Observable<Member>;
-  bookhistory$: Observable<MemberBook[]>;
-  signedout$: Observable<MemberBook[]>;
+  bookhistory$: Observable<SignedOutBook[]>;
+  signedout$: Observable<SignedOutBook[]>;
 
   constructor(
     private route: ActivatedRoute,
@@ -48,13 +50,32 @@ export class MemberDetailsComponent implements OnInit {
     this.member$ = this.route.paramMap
       .pipe(
         switchMap((params: ParamMap) =>
-        this.service.getMember(+params.get('id'))),
+          this.service.getMember(+params.get('id'))),
         tap(m => {
-          this.firstName = m.fullName.split(' ')[0];
-          this.lastName = m.fullName.split(' ')[1];
+
+          if (!m.fullName) {
+            this.firstName = 'undefined'
+            this.lastName = 'undefined'
+          } else {
+            this.firstName = m.fullName.split(' ')[0]
+            this.lastName = m.fullName.split(' ')[1]
+          }
+
           this.postalCode = m.postalCode;
         })
       );
+
+    // get the history "Currently Signed Out" and "Sign Out History"
+    this.bookhistory$ = this.service.getMemberBookHistory(this.auth.currentMember).pipe(
+      filter(x => x.length !== 0),
+      filter(val => !!val)
+    )
+
+    this.signedout$ = this.service.getSignedOutBooks(this.auth.currentMember).pipe(
+      filter(x => x.length !== 0),
+      filter(val => !!val)
+    )
+
   }
 
   onSubmit() {
@@ -77,6 +98,23 @@ export class MemberDetailsComponent implements OnInit {
     this.firstName = m.fullName.split(' ')[0];
     this.lastName = m.fullName.split(' ')[1];
     this.postalCode = m.postalCode;
+  }
+
+
+  changeCategory(event: MatTabChangeEvent) {
+
+    if (event.index) {
+      this.bookhistory$ = this.service.getMemberBookHistory(this.auth.currentMember).pipe(
+        filter(x => x.length !== 0),
+        filter(val => !!val)
+      )
+    } else {
+      this.signedout$ = this.service.getSignedOutBooks(this.auth.currentMember).pipe(
+        filter(x => x.length !== 0),
+        filter(val => !!val)
+      )
+    }
+
   }
 
 }
