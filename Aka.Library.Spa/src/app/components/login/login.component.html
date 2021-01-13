@@ -21,7 +21,7 @@
         </mat-form-field>
       </mat-card-content>
       <mat-card-actions align="end">
-        <button type="submit" mat-button color="warn" [disabled]='this.loginForm.isValid' [disabled]="isLoading" class="circular-progress-button">
+        <button type="submit" mat-button color="warn" [disabled]='!loginForm.valid' [disabled]="isLoading" class="circular-progress-button">
           <span *ngIf="!isLoading">Login</span> <mat-spinner *ngIf="isLoading" diameter="30" class="example-margin" color="primary" mode="indeterminate"></mat-spinner>
         </button>
       </mat-card-actions>
